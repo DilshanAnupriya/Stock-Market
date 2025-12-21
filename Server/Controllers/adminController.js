@@ -174,6 +174,38 @@ exports.getPendingKYC = async (req, res) => {
 };
 
 /**
+ * @desc    Get KYC application details by Account ID
+ * @route   GET /api/admin/kyc/:id
+ * @access  Private/Admin
+ */
+exports.getKYCDetails = async (req, res) => {
+    try {
+        const account = await Account.findById(req.params.id)
+            .populate('user', 'nic email mobile username')
+            .populate('bankDetails');
+
+        if (!account) {
+            return res.status(404).json({
+                success: false,
+                message: 'KYC application not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: account
+        });
+    } catch (error) {
+        console.error('Get KYC details error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get KYC details',
+            error: error.message
+        });
+    }
+};
+
+/**
  * @desc    Review KYC application
  * @route   PUT /api/admin/kyc/:id/review
  * @access  Private/Admin
@@ -328,6 +360,79 @@ exports.processTransaction = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to process transaction',
+            error: error.message
+        });
+    }
+};
+
+/**
+ * @desc    Create a new user (admin only)
+ * @route   POST /api/admin/users
+ * @access  Private/Admin
+ */
+exports.createUser = async (req, res) => {
+    try {
+        const { username, email, password, mobile, nic, role } = req.body;
+
+        // Basic validation
+        if (!username || !email || !password || !mobile || !nic || !role) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide all required fields'
+            });
+        }
+
+        // Check if user already exists
+        const userExists = await User.findOne({
+            $or: [{ email }, { nic }, { mobile }]
+        });
+
+        if (userExists) {
+            return res.status(400).json({
+                success: false,
+                message: 'User already exists (Email, NIC, or Mobile)'
+            });
+        }
+
+        // Create user
+        const user = await User.create({
+            username,
+            email,
+            password,
+            mobile,
+            nic,
+            role,
+            isVerified: true // Auto-verify email/mobile since admin created it? Or leave false?
+            // Let's assume admin created users are considered verified for login purposes, 
+            // OR they still need to verify OTP.
+            // For simplicity, let's keep isVerified default (false) or set to true if admin trusts them.
+            // The request didn't specify, but usually admin-created users might skip OTP.
+            // However, the schema defaults might be in place. 
+            // Let's stick to default behavior (false) unless specified, but for "admin" creating "admin", 
+            // maybe we want them active immediately. 
+            // Let's set isVerified: true for convenience as it's an admin action.
+        });
+
+        // If we want to set isVerified: true, we should include it. 
+        // Based on typical "Admin creates user" flows, they are pre-verified.
+        user.isVerified = true;
+        await user.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'User created successfully',
+            data: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error('Create user error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create user',
             error: error.message
         });
     }

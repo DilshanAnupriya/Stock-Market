@@ -74,25 +74,17 @@ const verifyOTPSchema = Joi.object({
 });
 
 const personalDetailsSchema = Joi.object({
-    title: Joi.string().valid('Mr', 'Mrs', 'Miss', 'Dr', 'Rev').required(),
     fullName: Joi.string().min(3).max(100).required(),
-    dateOfBirth: Joi.date().max('now').required(),
-    gender: Joi.string().valid('male', 'female', 'other').required(),
-    phoneNumber: Joi.string().pattern(/^0[0-9]{9}$/).required(),
-    alternateEmail: Joi.string().email().optional(),
-    permanentAddress: Joi.object({
-        street: Joi.string().required(),
-        city: Joi.string().required(),
-        province: Joi.string().required(),
-        postalCode: Joi.string().required()
-    }).required(),
-    correspondenceAddress: Joi.object({
-        sameAsPermanent: Joi.boolean().default(true),
-        street: Joi.string().when('sameAsPermanent', { is: false, then: Joi.required() }),
-        city: Joi.string().when('sameAsPermanent', { is: false, then: Joi.required() }),
-        province: Joi.string().when('sameAsPermanent', { is: false, then: Joi.required() }),
-        postalCode: Joi.string().when('sameAsPermanent', { is: false, then: Joi.required() })
-    }).optional()
+    dob: Joi.string().required(), // Accepts date string
+    address: Joi.string().required(),
+    city: Joi.string().required(),
+    district: Joi.string().required(),
+    postalCode: Joi.string().required(),
+    // Keep these optional/valid if frontend starts sending them
+    title: Joi.string().valid('Mr', 'Mrs', 'Miss', 'Dr', 'Rev').optional(),
+    gender: Joi.string().valid('male', 'female', 'other').optional(),
+    phoneNumber: Joi.string().pattern(/^0[0-9]{9}$/).optional(),
+    alternateEmail: Joi.string().email().optional()
 });
 
 const bankDetailsSchema = Joi.object({
@@ -118,12 +110,13 @@ const nomineeSchema = Joi.object({
         Joi.object({
             name: Joi.string().required(),
             relationship: Joi.string().required(),
-            nic: Joi.string().pattern(/^[0-9]{9}[vVxX]$|^[0-9]{12}$/).required(),
-            contactNumber: Joi.string().pattern(/^0[0-9]{9}$/).optional(),
+            nic: Joi.string().min(10).required(),
+            contactNumber: Joi.string().allow('', null).optional(), // Allow empty string
             percentage: Joi.number().min(0).max(100).required()
         })
     ).min(1).required()
 });
+
 
 const depositSchema = Joi.object({
     fundId: Joi.string().required(),

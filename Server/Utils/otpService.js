@@ -23,7 +23,7 @@ class OTPService {
                 sentTo,
                 sentVia,
                 expiresAt: new Date(Date.now() + expiryMinutes * 60 * 1000),
-                transaction: transactionId
+                ...(transactionId && { transaction: transactionId })
             });
 
             await otp.save();

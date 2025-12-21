@@ -74,15 +74,15 @@ const otpSchema = new mongoose.Schema({
 });
 
 // Hash OTP before saving
-otpSchema.pre('save', async function (next) {
-    if (!this.isModified('otpHash')) return next();
+// Hash OTP before saving
+otpSchema.pre('save', async function () {
+    if (!this.isModified('otpHash')) return;
 
     try {
         const salt = await bcrypt.genSalt(10);
         this.otpHash = await bcrypt.hash(this.otpHash, salt);
-        next();
     } catch (error) {
-        next(error);
+        throw error;
     }
 });
 

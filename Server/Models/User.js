@@ -88,15 +88,15 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+// Hash password before saving
+userSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
 
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
-        next();
     } catch (error) {
-        next(error);
+        throw error;
     }
 });
 
@@ -106,9 +106,8 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 // Hide deleted users from queries
-userSchema.pre(/^find/, function (next) {
+userSchema.pre(/^find/, function () {
     this.find({ isDeleted: { $ne: true } });
-    next();
 });
 
 // Instance method to check if user can perform transactions

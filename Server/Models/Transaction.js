@@ -109,7 +109,6 @@ transactionSchema.pre('save', async function (next) {
 // Index for faster queries
 transactionSchema.index({ user: 1, createdAt: -1 });
 transactionSchema.index({ status: 1 });
-transactionSchema.index({ transactionReference: 1 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 

@@ -56,11 +56,9 @@ const accountSchema = new mongoose.Schema({
     // NIC Documents
     nicFrontImage: {
         type: String, // File path
-        required: true
     },
     nicBackImage: {
         type: String, // File path
-        required: true
     },
     nicVerified: {
         type: Boolean,
@@ -71,31 +69,25 @@ const accountSchema = new mongoose.Schema({
     bankDetails: {
         accountNumber: {
             type: String,
-            required: true
         },
         bankName: {
             type: String,
-            required: true
         },
         branchName: {
             type: String,
-            required: true
         },
         accountType: {
             type: String,
             enum: ['savings', 'current'],
-            required: true
         }
     },
     bankBookImage: {
         type: String, // File path
-        required: true
     },
 
     // Billing Proof
     billingProofImage: {
         type: String, // File path
-        required: true
     },
     billingProofType: {
         type: String,
@@ -207,14 +199,14 @@ accountSchema.virtual('completionPercentage').get(function () {
 });
 
 // Validate nominee percentages sum to 100
-accountSchema.pre('save', function (next) {
+// Validate nominee percentages sum to 100
+accountSchema.pre('save', function () {
     if (this.nominees && this.nominees.length > 0) {
         const totalPercentage = this.nominees.reduce((sum, nominee) => sum + nominee.percentage, 0);
         if (totalPercentage !== 100) {
-            return next(new Error('Nominee percentages must sum to 100%'));
+            throw new Error('Nominee percentages must sum to 100%');
         }
     }
-    next();
 });
 
 const Account = mongoose.model('Account', accountSchema);

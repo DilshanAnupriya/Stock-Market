@@ -131,7 +131,7 @@ const fundSchema = new mongoose.Schema({
 });
 
 // Update NAV history when NAV changes
-fundSchema.pre('save', function (next) {
+fundSchema.pre('save', function () {
     if (this.isModified('currentNAV')) {
         this.navHistory.push({
             date: new Date(),
@@ -143,7 +143,6 @@ fundSchema.pre('save', function (next) {
             this.navHistory = this.navHistory.slice(-365);
         }
     }
-    next();
 });
 
 // Virtual for fund age

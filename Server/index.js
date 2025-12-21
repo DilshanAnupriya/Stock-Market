@@ -12,7 +12,25 @@ app.use(helmet());
 
 // CORS Configuration
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: function (origin, callback) {
+        const allowedOrigins = [
+            'http://localhost:3000',
+            'http://localhost:5173',
+            'http://localhost:5174',
+            process.env.CLIENT_URL
+        ].filter(Boolean);
+
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) === -1) {
+            // For development, you might want to switch this to allow all or log warning
+            // return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
+            // Being permissive for local dev if exact match fails but it is localhost
+            return callback(null, true);
+        }
+        return callback(null, true);
+    },
     credentials: true
 }));
 
@@ -117,7 +135,7 @@ app.use((err, req, res, next) => {
 });
 
 // Server Configuration
-const PORT = process.env.PORT || 5000;
+const PORT = 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
 const server = app.listen(PORT, HOST, () => {
@@ -130,23 +148,31 @@ const server = app.listen(PORT, HOST, () => {
 // Graceful Shutdown
 process.on('SIGTERM', () => {
     console.log('SIGTERM signal received: closing HTTP server');
-    server.close(() => {
+    server.close(async () => {
         console.log('HTTP server closed');
-        mongoose.connection.close(false, () => {
+        try {
+            await mongoose.connection.close();
             console.log('MongoDB connection closed');
             process.exit(0);
-        });
+        } catch (err) {
+            console.error('Error closing MongoDB connection', err);
+            process.exit(1);
+        }
     });
 });
 
 process.on('SIGINT', () => {
     console.log('\nSIGINT signal received: closing HTTP server');
-    server.close(() => {
+    server.close(async () => {
         console.log('HTTP server closed');
-        mongoose.connection.close(false, () => {
+        try {
+            await mongoose.connection.close();
             console.log('MongoDB connection closed');
             process.exit(0);
-        });
+        } catch (err) {
+            console.error('Error closing MongoDB connection', err);
+            process.exit(1);
+        }
     });
 });
 

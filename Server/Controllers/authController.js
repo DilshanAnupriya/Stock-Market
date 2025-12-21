@@ -67,7 +67,17 @@ exports.register = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Registration error:', error);
+        console.error('Registration error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+
+        // Handle Duplicate Key Error (e.g. if soft deleted user exists)
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            return res.status(400).json({
+                success: false,
+                message: `User with this ${field} already exists.`
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: 'Registration failed',

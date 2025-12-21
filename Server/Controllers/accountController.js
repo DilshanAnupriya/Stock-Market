@@ -15,15 +15,32 @@ exports.submitPersonalDetails = async (req, res) => {
         // Check if account already exists
         let account = await Account.findOne({ user: userId });
 
+        // Map frontend data to model structure
+        const modelData = {
+            fullName: personalData.fullName,
+            dateOfBirth: personalData.dob,
+            title: personalData.title || 'Mr', // Default
+            gender: personalData.gender || 'other', // Default
+            permanentAddress: {
+                street: personalData.address,
+                city: personalData.city,
+                province: personalData.district,
+                postalCode: personalData.postalCode
+            },
+            // Use user's mobile if not provided
+            phoneNumber: personalData.phoneNumber || req.user.mobile,
+            alternateEmail: personalData.alternateEmail
+        };
+
         if (account) {
             // Update existing account
-            Object.assign(account, personalData);
+            Object.assign(account, modelData);
             account.completionSteps.personalDetails = true;
         } else {
             // Create new account
             account = await Account.create({
                 user: userId,
-                ...personalData,
+                ...modelData,
                 completionSteps: { personalDetails: true }
             });
         }
@@ -36,7 +53,7 @@ exports.submitPersonalDetails = async (req, res) => {
             data: account
         });
     } catch (error) {
-        console.error('Personal details error:', error);
+        console.error('Personal details error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
         res.status(500).json({
             success: false,
             message: 'Failed to save personal details',

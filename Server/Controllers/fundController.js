@@ -7,9 +7,12 @@ const Fund = require('../Models/Fund');
  */
 exports.getAllFunds = async (req, res) => {
     try {
-        const { type, isActive = true } = req.query;
+        const { type, isActive } = req.query;
 
-        const query = { isActive };
+        const query = {};
+        if (isActive !== undefined) {
+            query.isActive = isActive === 'true';
+        }
         if (type) query.type = type;
 
         const funds = await Fund.find(query).sort({ name: 1 });
@@ -98,6 +101,17 @@ exports.createFund = async (req, res) => {
     try {
         const fundData = req.body;
 
+        // Basic validation for required fields if not handled by mongoose automatically with good errors
+        const requiredFields = ['name', 'code', 'type', 'description', 'minimumInvestment', 'currentNAV', 'inceptionDate', 'fundManager'];
+        for (const field of requiredFields) {
+            if (!fundData[field]) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Missing required field: ${field}`
+                });
+            }
+        }
+
         const fund = await Fund.create(fundData);
 
         res.status(201).json({
@@ -107,6 +121,26 @@ exports.createFund = async (req, res) => {
         });
     } catch (error) {
         console.error('Create fund error:', error);
+
+        // Handle Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation Error',
+                error: messages
+            });
+        }
+
+        // Handle Duplicate Key error (e.g. name or code)
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            return res.status(400).json({
+                success: false,
+                message: `A fund with this ${field} already exists`
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: 'Failed to create fund',
@@ -142,6 +176,26 @@ exports.updateFund = async (req, res) => {
         });
     } catch (error) {
         console.error('Update fund error:', error);
+
+        // Handle Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(val => val.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation Error',
+                error: messages
+            });
+        }
+
+        // Handle Duplicate Key error
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            return res.status(400).json({
+                success: false,
+                message: `A fund with this ${field} already exists`
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: 'Failed to update fund',

@@ -9,11 +9,13 @@ router.use(authorize('admin'));
 
 // User Management
 router.get('/users', adminController.getAllUsers);
+router.post('/users', adminController.createUser);
 router.get('/users/:id', adminController.getUserDetails);
 router.put('/users/:id/status', adminController.updateUserStatus);
 
 // KYC Management
 router.get('/kyc/pending', adminController.getPendingKYC);
+router.get('/kyc/:id', adminController.getKYCDetails); // New route
 router.put('/kyc/:id/review', adminController.reviewKYC);
 
 // Transaction Management
