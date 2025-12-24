@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { useAuthStore } from "../../store/useAuthStore";
 import { accountService } from "../../services/accountService";
 import { useToast } from "../../components/ui/use-toast";
+import { ThemeToggle } from "../../components/common/ThemeToggle";
+import { ProfileDialog } from "../../components/dashboard/ProfileDialog";
 
 export default function DashboardPage() {
     const { user, logout } = useAuthStore();
@@ -49,12 +51,14 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <header className="bg-white dark:bg-gray-800 shadow">
+        <div className="min-h-screen bg-background">
+            <header className="bg-card border-b border-border shadow-sm">
                 <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+                    <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
                     <div className="flex items-center gap-4">
-                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <ThemeToggle />
+                        <ProfileDialog />
+                        <span className="text-sm font-medium text-muted-foreground">
                             Welcome, {user?.name}
                         </span>
                         <Button variant="outline" onClick={handleLogout}>Logout</Button>

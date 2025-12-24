@@ -128,7 +128,9 @@ export default function AdminUserList() {
                                         </TableCell>
                                         <TableCell>
                                             {user.isKYCCompleted ? (
-                                                <Badge className="bg-green-100 text-green-800 hover:bg-green-100"><CheckCircle className="w-3 h-3 mr-1" /> Verified</Badge>
+                                                <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20">
+                                                    <CheckCircle className="w-3 h-3 mr-1" /> Verified
+                                                </Badge>
                                             ) : (
                                                 <Badge variant="outline">Pending</Badge>
                                             )}

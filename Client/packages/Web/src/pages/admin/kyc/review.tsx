@@ -204,7 +204,7 @@ export default function AdminKYCReview() {
                         {!showRejectInput && (
                             <Button
                                 onClick={() => handleAction('approve')}
-                                className="bg-green-600 hover:bg-green-700"
+                                className="bg-green-600 hover:bg-green-700 text-white"
                                 disabled={isProcessing}
                             >
                                 {isProcessing ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle className="mr-2 h-4 w-4" />}

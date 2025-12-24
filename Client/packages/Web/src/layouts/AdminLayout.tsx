@@ -5,6 +5,9 @@ import { cn } from "../utils";
 import { useAuthStore } from "../store/useAuthStore";
 import { Button } from "../components/ui/button";
 
+import { ThemeToggle } from "../components/common/ThemeToggle";
+import { ProfileDialog } from "../components/dashboard/ProfileDialog";
+
 const sidebarItems = [
     { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
     { name: "Users", path: "/admin/users", icon: Users },
@@ -23,7 +26,7 @@ export default function AdminLayout() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
+        <div className="min-h-screen bg-background flex">
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
@@ -35,12 +38,16 @@ export default function AdminLayout() {
             {/* Sidebar */}
             <aside
                 className={cn(
-                    "fixed md:static inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-50 transform transition-transform duration-200 ease-in-out md:transform-none",
+                    "fixed md:static inset-y-0 left-0 w-64 bg-card border-r border-border z-50 transform transition-transform duration-200 ease-in-out md:transform-none",
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
                 <div className="p-6 flex justify-between items-center">
-                    <h1 className="text-xl font-bold text-primary">Admin Portal</h1>
+                    <div className="flex items-center space-x-2">
+                        <h1 className="text-xl font-bold text-primary">Admin Portal</h1>
+                        <ThemeToggle />
+                        <ProfileDialog />
+                    </div>
                     <button
                         className="md:hidden"
                         onClick={() => setIsSidebarOpen(false)}
@@ -74,10 +81,10 @@ export default function AdminLayout() {
                     })}
                 </nav>
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
                     <Button
                         variant="ghost"
-                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-destructive/10"
                         onClick={() => logout()}
                     >
                         <LogOut className="mr-2 h-5 w-5" />
@@ -89,10 +96,10 @@ export default function AdminLayout() {
             {/* Main Content */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Mobile Header */}
-                <header className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center">
+                <header className="md:hidden bg-card border-b border-border p-4 flex items-center">
                     <button
                         onClick={() => setIsSidebarOpen(true)}
-                        className="p-2 -ml-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="p-2 -ml-2 rounded-md hover:bg-accent"
                     >
                         <Menu className="h-6 w-6" />
                     </button>

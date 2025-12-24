@@ -10,6 +10,7 @@ import { TrendingUp, ArrowRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { authService } from '../../services/authService';
 import { useToast } from '../../components/ui/use-toast';
+import { ThemeToggle } from '../../components/common/ThemeToggle';
 
 const registerSchema = z.object({
     nic: z.string().regex(/^[0-9]{9}[vVxX]$|^[0-9]{12}$/, "NIC must be in format 123456789V or 123456789012"),
@@ -62,11 +63,12 @@ const RegisterPage = () => {
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4 py-8">
             <div className="w-full max-w-md">
-                <div className="flex justify-center mb-8">
+                <div className="flex justify-between items-center mb-8">
                     <div className="flex items-center gap-2">
                         <TrendingUp className="h-8 w-8 text-primary" />
                         <span className="text-2xl font-bold">StockMarket</span>
                     </div>
+                    <ThemeToggle />
                 </div>
 
                 <Card className="border-border/50 shadow-lg">

@@ -12,6 +12,7 @@ router.post('/resend-otp', authController.resendOTP);
 
 // Protected routes
 router.get('/me', protect, authController.getMe);
+router.put('/me', protect, authController.updateMe);
 router.post('/logout', protect, authController.logout);
 
 module.exports = router;

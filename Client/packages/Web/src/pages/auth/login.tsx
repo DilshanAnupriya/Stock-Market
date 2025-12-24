@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { authService } from '../../services/authService';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useToast } from '../../components/ui/use-toast';
+import { ThemeToggle } from '../../components/common/ThemeToggle';
 
 const loginSchema = z.object({
     email: z.string().email("Please enter a valid email address"), // Note: Backend allows NIC/Mobile too, but frontend used email. Updating logic to be "Identifier" if wanted, but keeping email for now as per UI.
@@ -82,11 +83,12 @@ const LoginPage = () => {
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                <div className="flex justify-center mb-8">
+                <div className="flex justify-between items-center mb-8">
                     <div className="flex items-center gap-2">
                         <TrendingUp className="h-8 w-8 text-primary" />
                         <span className="text-2xl font-bold">StockMarket</span>
                     </div>
+                    <ThemeToggle />
                 </div>
 
                 <Card className="border-border/50 shadow-lg">

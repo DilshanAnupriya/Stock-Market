@@ -246,22 +246,57 @@ exports.resendOTP = async (req, res) => {
 };
 
 /**
- * @desc    Logout user
- * @route   POST /api/auth/logout
+ * @desc    Update current user profile
+ * @route   PUT /api/auth/me
  * @access  Private
  */
-exports.logout = async (req, res) => {
+exports.updateMe = async (req, res) => {
     try {
-        // In a real application, you might want to blacklist the token
+        const { username, mobile, email } = req.body;
+
+        // Find user
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Check for duplicates if updating sensitive fields
+        if (email && email !== user.email) {
+            const existingEmail = await User.findOne({ email, _id: { $ne: user._id } });
+            if (existingEmail) {
+                return res.status(400).json({ success: false, message: 'Email already in use' });
+            }
+            user.email = email;
+            user.isEmailVerified = false;
+        }
+
+        if (mobile && mobile !== user.mobile) {
+            const existingMobile = await User.findOne({ mobile, _id: { $ne: user._id } });
+            if (existingMobile) {
+                return res.status(400).json({ success: false, message: 'Mobile number already in use' });
+            }
+            user.mobile = mobile;
+            user.isMobileVerified = false;
+        }
+
+        if (username) user.username = username;
+
+        await user.save();
+
         res.status(200).json({
             success: true,
-            message: 'Logged out successfully'
+            data: user,
+            message: 'Profile updated successfully'
         });
     } catch (error) {
-        console.error('Logout error:', error);
+        console.error('Update profile error:', error);
         res.status(500).json({
             success: false,
-            message: 'Logout failed',
+            message: 'Failed to update profile',
             error: error.message
         });
     }

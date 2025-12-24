@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { Shield, TrendingUp, Smartphone, Globe } from 'lucide-react';
+import { ThemeToggle } from '../../components/common/ThemeToggle';
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ const LandingPage = () => {
                             </span>
                         </div>
                         <div className="flex items-center gap-4">
+                            <ThemeToggle />
                             <Button variant="ghost" onClick={() => navigate('/login')}>
                                 Log In
                             </Button>

@@ -25,48 +25,52 @@ import AdminKYCList from './pages/admin/kyc/list';
 import AdminKYCReview from './pages/admin/kyc/review';
 import AdminFundList from './pages/admin/funds/list';
 
+import { ThemeProvider } from './hooks/use-theme';
+
 function App() {
   return (
-    <ToastProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/verify-otp" element={<VerifyOTPPage />} />
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ToastProvider>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-otp" element={<VerifyOTPPage />} />
 
-          {/* Protected Routes (Placeholder) */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/kyc" element={<KYCLayout />}>
-              <Route path="personal" element={<Step1Personal />} />
-              <Route path="nic" element={<Step2NICUpload />} />
-              <Route path="bank" element={<Step3BankDetails />} />
-              <Route path="bank-book" element={<Step4BankBook />} />
-              <Route path="billing" element={<Step5BillingProof />} />
-              <Route path="employment" element={<Step6Employment />} />
-              <Route path="nominee" element={<Step7Nominee />} />
-              <Route path="video" element={<Step8VideoKYC />} />
-              <Route path="declaration" element={<Step9Declaration />} />
-              <Route index element={<Navigate to="personal" replace />} />
+            {/* Protected Routes (Placeholder) */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/kyc" element={<KYCLayout />}>
+                <Route path="personal" element={<Step1Personal />} />
+                <Route path="nic" element={<Step2NICUpload />} />
+                <Route path="bank" element={<Step3BankDetails />} />
+                <Route path="bank-book" element={<Step4BankBook />} />
+                <Route path="billing" element={<Step5BillingProof />} />
+                <Route path="employment" element={<Step6Employment />} />
+                <Route path="nominee" element={<Step7Nominee />} />
+                <Route path="video" element={<Step8VideoKYC />} />
+                <Route path="declaration" element={<Step9Declaration />} />
+                <Route index element={<Navigate to="personal" replace />} />
+              </Route>
+
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUserList />} />
+                <Route path="kyc" element={<AdminKYCList />} />
+                <Route path="kyc/:id" element={<AdminKYCReview />} />
+                <Route path="funds" element={<AdminFundList />} />
+              </Route>
             </Route>
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="users" element={<AdminUserList />} />
-              <Route path="kyc" element={<AdminKYCList />} />
-              <Route path="kyc/:id" element={<AdminKYCReview />} />
-              <Route path="funds" element={<AdminFundList />} />
-            </Route>
-          </Route>
-
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </ToastProvider>
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 

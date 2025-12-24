@@ -55,5 +55,11 @@ export const authService = {
     getCurrentUser: async () => {
         const response = await api.get<AuthResponse>('/auth/me');
         return response.data;
-    }
+    },
+
+    // Update profile
+    updateProfile: async (data: { username?: string; mobile?: string; email?: string }) => {
+        const response = await api.put<AuthResponse>('/auth/me', data);
+        return response.data;
+    },
 };
